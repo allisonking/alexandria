@@ -8,16 +8,25 @@ export default function App() {
   const [layout, setLayout] = React.useState("grid");
   const [selectedPoint, setSelectedPoint] = React.useState(null);
 
+  const visRef = React.useRef();
+  const handleResetCamera = () => {
+    visRef.current.resetCamera();
+  };
+
   return (
     <div className="App">
       <div className="vis-container">
         <ThreePointVis
+          ref={visRef}
           data={data}
           layout={layout}
           selectedPoint={selectedPoint}
           onSelectPoint={setSelectedPoint}
         />
       </div>
+      <button className="reset-button" onClick={handleResetCamera}>
+        Reset Camera
+      </button>
       <div className="controls">
         <strong>Layouts</strong>{" "}
         <button

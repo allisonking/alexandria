@@ -11,7 +11,7 @@ const ALT_KEY = 18;
 const CTRL_KEY = 17;
 const CMD_KEY = 91;
 
-const Controls = () => {
+const Controls = ({}, ref) => {
   const controls = React.useRef();
   const { camera, gl } = useThree();
 
@@ -19,6 +19,22 @@ const Controls = () => {
     // update the view as the vis is interacted with
     controls.current.update();
   });
+
+  React.useImperativeHandle(ref, () => ({
+    resetCamera: () => {
+      // reset look-at (target) and camera position
+      controls.current.target.set(0, 0, 0);
+      camera.position.set(0, 0, 80);
+
+      // needed for trackball controls, reset the up vector
+      camera.up.set(
+        controls.current.up0.x,
+        controls.current.up0.y,
+        controls.current.up0.z
+      );
+    },
+  }));
+
   return (
     <trackballControls
       ref={controls}
@@ -38,4 +54,4 @@ const Controls = () => {
   );
 };
 
-export default Controls;
+export default React.forwardRef(Controls);

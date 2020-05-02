@@ -69,7 +69,7 @@ export const useAnimatedLayout = ({ data, layout, onFrame }) => {
 
   // do the actual animation when layout changes
   const prevLayout = React.useRef(layout);
-  useSpring({
+  const animProps = useSpring({
     animationProgress: 1,
     from: { animationProgress: 0 },
     reset: layout !== prevLayout.current,
@@ -81,6 +81,7 @@ export const useAnimatedLayout = ({ data, layout, onFrame }) => {
     },
   });
   prevLayout.current = layout;
+  return animProps;
 };
 
 export const useLayout = ({ data, layout = "grid" }) => {

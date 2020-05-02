@@ -2,7 +2,7 @@ import * as React from "react";
 import * as THREE from "three";
 
 const SELECTED_COLOR = "#6f6";
-const DEFAULT_COLOR = "#fff";
+const DEFAULT_COLOR = "#888";
 
 // re-use for instance computations
 const scratchColor = new THREE.Color();
