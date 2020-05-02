@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Canvas } from "react-three-fiber";
 import Controls from "../Controls/Controls";
-import InstancedPoints from "./InstancedPoints";
+import BookPoints from "./BookPoints";
 import Effects from "../Effects/Effects";
 
 const ThreePointVis = ({ data, layout, selectedPoint, onSelectPoint }, ref) => {
@@ -12,7 +12,7 @@ const ThreePointVis = ({ data, layout, selectedPoint, onSelectPoint }, ref) => {
     },
   }));
   return (
-    <Canvas camera={{ position: [0, 0, 80], far: 15000 }}>
+    <Canvas camera={{ position: [0, 0, 10], far: 15000 }}>
       <Controls ref={controlsRef} />
       <ambientLight color="#ffffff" intensity={0.1} />
       <hemisphereLight
@@ -21,7 +21,7 @@ const ThreePointVis = ({ data, layout, selectedPoint, onSelectPoint }, ref) => {
         groundColor="#080820"
         intensity={1.0}
       />
-      <InstancedPoints
+      <BookPoints
         data={data}
         layout={layout}
         selectedPoint={selectedPoint}

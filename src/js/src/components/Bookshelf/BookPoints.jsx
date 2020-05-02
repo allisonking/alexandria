@@ -8,6 +8,9 @@ import { useAnimatedLayout } from "../layouts";
 // re-use for instance computations
 const scratchObject3D = new THREE.Object3D();
 
+const texture = new THREE.TextureLoader().load(
+  "https://images-na.ssl-images-amazon.com/images/I/91ocU8970hL.jpg"
+);
 const updateInstancedMeshMatrices = ({ mesh, data }) => {
   if (!mesh) return;
 
@@ -48,6 +51,7 @@ const InstancedPoints = ({ data, layout, selectedPoint, onSelectPoint }) => {
     selectedPoint,
     onSelectPoint,
   });
+
   return (
     <>
       <instancedMesh
@@ -57,16 +61,19 @@ const InstancedPoints = ({ data, layout, selectedPoint, onSelectPoint }) => {
         onClick={handleClick}
         onPointerDown={handlePointerDown}
       >
-        <cylinderBufferGeometry attach="geometry" args={[0.5, 0.5, 0.15, 6]}>
+        <boxBufferGeometry attach="geometry" args={[0.5, 0.5, 1]}>
           <instancedBufferAttribute
             ref={colorAttrib}
             attachObject={["attributes", "color"]}
             args={[colorArray, 3]}
           />
-        </cylinderBufferGeometry>
+        </boxBufferGeometry>
         <meshStandardMaterial
           attach="material"
-          vertexColors={THREE.VertexColors}
+          map={texture}
+          // transparent={true}
+          // opacity={0.9}
+          // vertexColors={THREE.VertexColors}
         />
       </instancedMesh>
       {selectedPoint && (
@@ -80,7 +87,7 @@ const InstancedPoints = ({ data, layout, selectedPoint, onSelectPoint }) => {
           <pointLight
             distance={9}
             position={[0, 0, 0.3]}
-            intensity={2.2}
+            intensity={5}
             decay={30}
             color="#3f3"
           />
@@ -88,7 +95,7 @@ const InstancedPoints = ({ data, layout, selectedPoint, onSelectPoint }) => {
             position={[0, 0, 0]}
             decay={1}
             distance={5}
-            intensity={1.5}
+            intensity={1}
             color="#2f0"
           />
         </a.group>

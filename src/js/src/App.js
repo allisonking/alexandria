@@ -1,11 +1,11 @@
 import * as React from "react";
-import ThreePointVis from "./components/ThreePointVis/ThreePointVis";
+import Bookshelf from "./components/Bookshelf/Bookshelf";
 import "./styles.css";
 
-const data = new Array(10000).fill(0).map((d, id) => ({ id }));
+const data = new Array(200).fill(0).map((d, id) => ({ id }));
 
 export default function App() {
-  const [layout, setLayout] = React.useState("grid");
+  const [layout, setLayout] = React.useState("shelf");
   const [selectedPoint, setSelectedPoint] = React.useState(null);
 
   const visRef = React.useRef();
@@ -16,7 +16,14 @@ export default function App() {
   return (
     <div className="App">
       <div className="vis-container">
-        <ThreePointVis
+        {/* <ThreePointVis
+          ref={visRef}
+          data={data}
+          layout={layout}
+          selectedPoint={selectedPoint}
+          onSelectPoint={setSelectedPoint}
+        /> */}
+        <Bookshelf
           ref={visRef}
           data={data}
           layout={layout}
@@ -40,6 +47,12 @@ export default function App() {
           className={layout === "spiral" ? "active" : undefined}
         >
           Spiral
+        </button>
+        <button
+          onClick={() => setLayout("shelf")}
+          className={layout === "shelf" ? "active" : undefined}
+        >
+          Shelf
         </button>
         {selectedPoint && (
           <div className="selected-point">
