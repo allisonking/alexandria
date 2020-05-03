@@ -53,6 +53,8 @@ export const useMousePointInteraction = ({
     }
 
     // index is instanceId if we never change sort order
+    console.log("instanceId", instanceId);
+    console.log("event", event);
     const index = instanceId;
     const point = data[index];
 

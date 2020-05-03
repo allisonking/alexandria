@@ -1,107 +1,83 @@
 import * as React from "react";
-import * as THREE from "three";
-import { useLoader } from "react-three-fiber";
-import { a, useSpring } from "react-spring/three";
-
-import {
-  usePointColors,
-  useMousePointInteraction,
-  usePrevious,
-} from "../hooks";
-import { useAnimatedLayout, useLayout } from "../layouts";
+import Book from "./Book";
+import { config } from "react-spring";
+import { a, useSprings } from "react-spring/three";
 
 const Points = ({ data, layout, selectedPoint, onSelectPoint }) => {
-  const texture = useLoader(
-    THREE.TextureLoader,
-    "https://images-na.ssl-images-amazon.com/images/I/91ocU8970hL.jpg"
-  );
-  const texture2 = useLoader(
-    THREE.TextureLoader,
-    "https://images-na.ssl-images-amazon.com/images/I/51jNORv6nQL._SX340_BO1,204,203,200_.jpg"
-  );
+  const texture1 =
+    "https://images-na.ssl-images-amazon.com/images/I/91ocU8970hL.jpg";
+  const texture2 =
+    "https://images-na.ssl-images-amazon.com/images/I/51jNORv6nQL._SX340_BO1,204,203,200_.jpg";
 
-  const prevLayout = usePrevious(layout);
-  const numPoints = data.length;
-  const numCols = Math.ceil(Math.sqrt(numPoints));
-  const numRows = numCols;
+  const bookDimensions = [1, 2, 1];
 
-  // // run the layout, animating on change
-  // const { animationProgress } = useAnimatedLayout({
-  //   data,
-  //   layout,
-  //   onFrame: () => {},
-  //   // onFrame: () => {
-  //   //   console.log("animated", data);
-  //   //   updateMesh({ mesh: meshRef.current });
-  //   // },
-  // });
-
-  const shelfLayout = (i) => {
+  const shelf = (i) => {
+    const numCols = Math.ceil(Math.sqrt(data.length));
+    const numRows = numCols;
     const col = (i % numCols) - numCols / 2;
     const row = Math.floor(i / numCols) - numRows / 2;
-    const x = col;
-    const y = row * 1.05;
-    // const z = (numPoints -i) * 0.05
-    const z = 0;
-    return { x, y, z };
-  };
-
-  let theta = 0;
-  const spiralLayout = (i) => {
-    const radius = Math.max(1, Math.sqrt(i + 1) * 0.6);
-    theta += Math.asin(1 / radius) * 1;
-
+    const position = [col * 1.05, row * 1.2, 0];
     return {
-      x: radius * Math.cos(theta),
-      y: radius * Math.sin(theta),
-      z: i * 0.05,
+      // position: [10 - Math.random() * 20, 10 - Math.random() * 20, i * 0.5],
+      position: position,
     };
   };
 
-  const getLayout = (i) => {
-    switch (layout) {
-      case "spiral":
-        return spiralLayout(i);
-
-      case "shelf":
-      default: {
-        return shelfLayout(i);
-      }
-    }
+  const random = (i) => {
+    const r = Math.random();
+    return {
+      position: [10 - Math.random() * 20, 10 - Math.random() * 20, i * 0.5],
+    };
   };
 
-  const animProps = useSpring({
-    animationProgress: 1,
-    from: { animationProgress: 0 },
-    reset: prevLayout !== layout,
-  });
-  console.log("animprops", animProps);
+  let layoutFunc = random;
+  if (layout === "shelf") {
+    layoutFunc = shelf;
+  }
+  config.free = { mass: 40, tension: 150, friction: 100 };
 
-  const { handleClick, handlePointerDown } = useMousePointInteraction({
-    data,
-    selectedPoint,
-    onSelectPoint,
-  });
+  const [springs, set] = useSprings(data.length, (i) => ({
+    from: layoutFunc(i),
+    ...layoutFunc(i),
+    // config: { mass: 40, tension: 150, friction: 100 },
+    config: config.free,
+  }));
+
+  React.useEffect(() => {
+    switch (layout) {
+      case "shelf":
+        set((i) => {
+          return { ...shelf(i), delay: i * 5, config: config.gentle };
+        });
+        break;
+      case "free":
+      default: {
+        // do once since otherwise have to wait 3 sec
+        set((i) => ({ ...random(i), delay: i * 5, config: config.free }));
+        const interval = setInterval(
+          () =>
+            set((i) => ({
+              ...random(i),
+              delay: i * 5,
+              config: config.free,
+            })),
+          3000
+        );
+        return () => clearInterval(interval);
+      }
+    }
+  }, [layout]);
 
   return (
     <>
       {data.map((d, i) => {
-        const { x, y, z } = getLayout(i);
-
         return (
-          <mesh
+          <Book
             key={d.id}
-            position={[x, y, z]}
-            rotation={[Math.PI * 0.5, 0, 0]}
-            onClick={handleClick}
-            onPointerDown={handlePointerDown}
-          >
-            <boxBufferGeometry attach="geometry" args={[0.5, 0.5, 1]} />
-            <meshStandardMaterial
-              attach="material"
-              map={i % 2 ? texture : texture2}
-            />
-          </mesh>
+            position={springs[i].position}
+            dimensions={bookDimensions}
+            textureUrl={i % 2 ? texture1 : texture2}
+          />
         );
       })}
       {/* {selectedPoint && (

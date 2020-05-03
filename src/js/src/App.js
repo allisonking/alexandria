@@ -5,8 +5,9 @@ import "./styles.css";
 const data = new Array(200).fill(0).map((d, id) => ({ id }));
 
 export default function App() {
-  const [layout, setLayout] = React.useState("shelf");
+  const [layout, setLayout] = React.useState("free");
   const [selectedPoint, setSelectedPoint] = React.useState(null);
+  console.log("selected point", selectedPoint);
 
   const visRef = React.useRef();
   const handleResetCamera = () => {
@@ -38,10 +39,10 @@ export default function App() {
       <div className="controls">
         <strong>Layouts</strong>{" "}
         <button
-          onClick={() => setLayout("grid")}
-          className={layout === "grid" ? "active" : undefined}
+          onClick={() => setLayout("free")}
+          className={layout === "free" ? "active" : undefined}
         >
-          Grid
+          free
         </button>
         <button
           onClick={() => setLayout("spiral")}
