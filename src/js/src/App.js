@@ -23,6 +23,7 @@ export default function App() {
           selectedPoint={selectedPoint}
           onSelectPoint={setSelectedPoint}
         /> */}
+
         <Bookshelf
           ref={visRef}
           data={data}

@@ -1,51 +1,82 @@
 import * as React from "react";
 import * as THREE from "three";
-import { a } from "react-spring/three";
+import { useLoader } from "react-three-fiber";
+import { a, useSpring } from "react-spring/three";
 
-import { usePointColors, useMousePointInteraction } from "../hooks";
-import { useAnimatedLayout } from "../layouts";
+import {
+  usePointColors,
+  useMousePointInteraction,
+  usePrevious,
+} from "../hooks";
+import { useAnimatedLayout, useLayout } from "../layouts";
 
-// re-use for instance computations
-const scratchObject3D = new THREE.Object3D();
+const Points = ({ data, layout, selectedPoint, onSelectPoint }) => {
+  const texture = useLoader(
+    THREE.TextureLoader,
+    "https://images-na.ssl-images-amazon.com/images/I/91ocU8970hL.jpg"
+  );
+  const texture2 = useLoader(
+    THREE.TextureLoader,
+    "https://images-na.ssl-images-amazon.com/images/I/51jNORv6nQL._SX340_BO1,204,203,200_.jpg"
+  );
 
-const texture = new THREE.TextureLoader().load(
-  "https://images-na.ssl-images-amazon.com/images/I/91ocU8970hL.jpg"
-);
-const updateInstancedMeshMatrices = ({ mesh, data }) => {
-  if (!mesh) return;
-
-  // set the transform matrix for each instance
-  for (let i = 0; i < data.length; ++i) {
-    const { x, y, z } = data[i];
-
-    scratchObject3D.position.set(x, y, z);
-    scratchObject3D.rotation.set(0.5 * Math.PI, 0, 0);
-    scratchObject3D.updateMatrix();
-    mesh.setMatrixAt(i, scratchObject3D.matrix);
-  }
-
-  mesh.instanceMatrix.needsUpdate = true;
-};
-
-const InstancedPoints = ({ data, layout, selectedPoint, onSelectPoint }) => {
-  const meshRef = React.useRef();
+  const prevLayout = usePrevious(layout);
   const numPoints = data.length;
+  const numCols = Math.ceil(Math.sqrt(numPoints));
+  const numRows = numCols;
 
-  // run the layout, animating on change
-  const { animationProgress } = useAnimatedLayout({
-    data,
-    layout,
-    onFrame: () => {
-      updateInstancedMeshMatrices({ mesh: meshRef.current, data });
-    },
+  // // run the layout, animating on change
+  // const { animationProgress } = useAnimatedLayout({
+  //   data,
+  //   layout,
+  //   onFrame: () => {},
+  //   // onFrame: () => {
+  //   //   console.log("animated", data);
+  //   //   updateMesh({ mesh: meshRef.current });
+  //   // },
+  // });
+
+  const shelfLayout = (i) => {
+    const col = (i % numCols) - numCols / 2;
+    const row = Math.floor(i / numCols) - numRows / 2;
+    const x = col;
+    const y = row * 1.05;
+    // const z = (numPoints -i) * 0.05
+    const z = 0;
+    return { x, y, z };
+  };
+
+  let theta = 0;
+  const spiralLayout = (i) => {
+    const radius = Math.max(1, Math.sqrt(i + 1) * 0.6);
+    theta += Math.asin(1 / radius) * 1;
+
+    return {
+      x: radius * Math.cos(theta),
+      y: radius * Math.sin(theta),
+      z: i * 0.05,
+    };
+  };
+
+  const getLayout = (i) => {
+    switch (layout) {
+      case "spiral":
+        return spiralLayout(i);
+
+      case "shelf":
+      default: {
+        return shelfLayout(i);
+      }
+    }
+  };
+
+  const animProps = useSpring({
+    animationProgress: 1,
+    from: { animationProgress: 0 },
+    reset: prevLayout !== layout,
   });
+  console.log("animprops", animProps);
 
-  // update instance matrices only when needed
-  React.useEffect(() => {
-    updateInstancedMeshMatrices({ mesh: meshRef.current, data });
-  }, [numPoints, data, layout]);
-
-  const { colorAttrib, colorArray } = usePointColors({ data, selectedPoint });
   const { handleClick, handlePointerDown } = useMousePointInteraction({
     data,
     selectedPoint,
@@ -54,29 +85,26 @@ const InstancedPoints = ({ data, layout, selectedPoint, onSelectPoint }) => {
 
   return (
     <>
-      <instancedMesh
-        ref={meshRef}
-        args={[null, null, numPoints]}
-        frustumCulled={false}
-        onClick={handleClick}
-        onPointerDown={handlePointerDown}
-      >
-        <boxBufferGeometry attach="geometry" args={[0.5, 0.5, 1]}>
-          <instancedBufferAttribute
-            ref={colorAttrib}
-            attachObject={["attributes", "color"]}
-            args={[colorArray, 3]}
-          />
-        </boxBufferGeometry>
-        <meshStandardMaterial
-          attach="material"
-          map={texture}
-          // transparent={true}
-          // opacity={0.9}
-          // vertexColors={THREE.VertexColors}
-        />
-      </instancedMesh>
-      {selectedPoint && (
+      {data.map((d, i) => {
+        const { x, y, z } = getLayout(i);
+
+        return (
+          <mesh
+            key={d.id}
+            position={[x, y, z]}
+            rotation={[Math.PI * 0.5, 0, 0]}
+            onClick={handleClick}
+            onPointerDown={handlePointerDown}
+          >
+            <boxBufferGeometry attach="geometry" args={[0.5, 0.5, 1]} />
+            <meshStandardMaterial
+              attach="material"
+              map={i % 2 ? texture : texture2}
+            />
+          </mesh>
+        );
+      })}
+      {/* {selectedPoint && (
         <a.group
           position={animationProgress.interpolate(() => [
             selectedPoint.x,
@@ -99,9 +127,9 @@ const InstancedPoints = ({ data, layout, selectedPoint, onSelectPoint }) => {
             color="#2f0"
           />
         </a.group>
-      )}
+      )} */}
     </>
   );
 };
 
-export default InstancedPoints;
+export default Points;

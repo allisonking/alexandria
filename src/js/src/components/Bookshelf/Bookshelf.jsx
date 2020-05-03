@@ -21,12 +21,14 @@ const ThreePointVis = ({ data, layout, selectedPoint, onSelectPoint }, ref) => {
         groundColor="#080820"
         intensity={1.0}
       />
-      <BookPoints
-        data={data}
-        layout={layout}
-        selectedPoint={selectedPoint}
-        onSelectPoint={onSelectPoint}
-      />
+      <React.Suspense fallback={<mesh />}>
+        <BookPoints
+          data={data}
+          layout={layout}
+          selectedPoint={selectedPoint}
+          onSelectPoint={onSelectPoint}
+        />
+      </React.Suspense>
       <Effects />
     </Canvas>
   );

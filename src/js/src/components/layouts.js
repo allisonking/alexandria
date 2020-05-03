@@ -35,6 +35,7 @@ function shelfLayout(data) {
     datum.y = row * 1.05;
     datum.z = (numPoints - i) * 0.05;
   }
+  console.log("done with data");
 }
 
 function spiralLayout(data) {
@@ -84,7 +85,7 @@ const interpolateSourceTarget = (data, progress) => {
 };
 
 export const useAnimatedLayout = ({ data, layout, onFrame }) => {
-  // compute layout remembering initial position as soure and end position as target
+  // compute layout remembering initial position as source and end position as target
   useSourceTargetLayout({ data, layout });
 
   // do the actual animation when layout changes
@@ -105,6 +106,7 @@ export const useAnimatedLayout = ({ data, layout, onFrame }) => {
 };
 
 export const useLayout = ({ data, layout = "grid" }) => {
+  console.log("calling useLayout", layout);
   React.useEffect(() => {
     switch (layout) {
       case "spiral":
