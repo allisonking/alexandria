@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
 import json
 import os
+from os.path import join, dirname
 
 import requests
 import xmltodict
+from dotenv import load_dotenv
 
 VERSION = 2
 API_URL = "https://www.goodreads.com/review/list"
 SHELF = "read"
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+GOODREADS_API_KEY = os.getenv('GOODREADS_API_KEY')
 
 
 def respond(err, res=None):
@@ -88,12 +95,11 @@ def get_read_books(user_id):
 
 
 def _make_goodreads_request(user_id) -> requests.Response:
-    api_key = os.environ['GOODREADS_API_KEY']
     params = {
         "v": VERSION,
         "shelf": SHELF,
         "id": user_id,
-        "key": api_key,
+        "key": GOODREADS_API_KEY,
         "per_page": 200,
         "sort": "date_added"
     }
