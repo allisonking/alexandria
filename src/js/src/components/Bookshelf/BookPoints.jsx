@@ -4,7 +4,7 @@ import { useThree } from "react-three-fiber";
 import { config } from "react-spring";
 import { a, useSprings } from "react-spring/three";
 
-const Points = ({ data, layout, selectedPoint, onSelectPoint }) => {
+const Points = ({ data, layout, selectedPoint, onSelectPoint, setLayout }) => {
   const texture1 =
     "https://images-na.ssl-images-amazon.com/images/I/91ocU8970hL.jpg";
   const texture2 =
@@ -24,6 +24,16 @@ const Points = ({ data, layout, selectedPoint, onSelectPoint }) => {
     ];
     return {
       position: position,
+    };
+  };
+
+  const open = (i) => {
+    const numCols = Math.ceil(Math.sqrt(data.length));
+    const numRows = numCols;
+    const col = (i % numCols) - numCols / 2;
+    const row = Math.floor(i / numCols) - numRows / 2;
+    return {
+      position: [col * bookDimensions[0] * 1.1, row * bookDimensions[1], col],
     };
   };
 
@@ -53,6 +63,15 @@ const Points = ({ data, layout, selectedPoint, onSelectPoint }) => {
           return { ...shelf(i), delay: i * 5, config: config.gentle };
         });
         break;
+      case "explore":
+        set((i) => {
+          return { ...open(i), config: config.gentle };
+        });
+        setTimeout(() => {
+          setLayout("free");
+        }, 1000);
+
+        break;
       case "free":
       default: {
         // do once since otherwise have to wait 3 sec
@@ -71,7 +90,12 @@ const Points = ({ data, layout, selectedPoint, onSelectPoint }) => {
     }
   }, [layout]);
 
-  const handleClick = (d) => {
+  const handleClick = (d, isTrigger) => {
+    if (isTrigger) {
+      console.log("change layout");
+      setLayout("explore");
+      return;
+    }
     if (selectedPoint && d.id === selectedPoint.id) {
       onSelectPoint(undefined);
     } else {
@@ -112,6 +136,19 @@ const Points = ({ data, layout, selectedPoint, onSelectPoint }) => {
           />
         </a.group>
       )}
+      {/* {layout === "shelf" && (
+        <group>
+          <spotLight
+            intensity={6}
+            position={[-50, 100, 10]}
+            angle={0.2}
+            penumbra={1}
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+            castShadow
+          />
+        </group>
+      )} */}
     </>
   );
 };

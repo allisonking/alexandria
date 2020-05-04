@@ -9,7 +9,10 @@ import { BackDrop, GroundPlane } from "../Room/Room";
 const backgroundUrl =
   "https://us.123rf.com/450wm/pogrebkov/pogrebkov1804/pogrebkov180400052/100143207-black-cracked-brick-tiles-wall-texture-dark-old-rough-brickwork-background.jpg?ver=6";
 
-const ThreePointVis = ({ data, layout, selectedPoint, onSelectPoint }, ref) => {
+const Bookshelf = (
+  { data, layout, selectedPoint, onSelectPoint, setLayout },
+  ref
+) => {
   const controlsRef = React.useRef();
   React.useImperativeHandle(ref, () => ({
     resetCamera: () => {
@@ -40,6 +43,7 @@ const ThreePointVis = ({ data, layout, selectedPoint, onSelectPoint }, ref) => {
           layout={layout}
           selectedPoint={selectedPoint}
           onSelectPoint={onSelectPoint}
+          setLayout={setLayout}
         />
       </React.Suspense>
       {/* <Effects /> */}
@@ -47,4 +51,4 @@ const ThreePointVis = ({ data, layout, selectedPoint, onSelectPoint }, ref) => {
   );
 };
 
-export default React.forwardRef(ThreePointVis);
+export default React.forwardRef(Bookshelf);

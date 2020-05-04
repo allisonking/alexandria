@@ -3,16 +3,29 @@ import * as THREE from "three";
 import { useLoader } from "react-three-fiber";
 import { a } from "react-spring/three";
 
-const Book = (
-  { position, onClick, onPointerDown, textureUrl, dimensions, data },
-  ref
-) => {
+const Book = ({
+  position,
+  onClick,
+  onPointerDown,
+  textureUrl,
+  dimensions,
+  data,
+}) => {
+  const ref = React.useRef();
   const texture = useLoader(THREE.TextureLoader, textureUrl);
 
   const handleClick = () => {
     // attach position data
     data.position = position;
-    onClick(data);
+    const rotated = ref.current.rotation.x === Math.PI / 4;
+    if (data.trigger) {
+      if (rotated) {
+        ref.current.rotation.x = 0;
+      } else {
+        ref.current.rotation.x = Math.PI / 4;
+      }
+    }
+    onClick(data, data.trigger && !rotated);
   };
 
   return (
@@ -28,4 +41,4 @@ const Book = (
   );
 };
 
-export default React.forwardRef(Book);
+export default Book;

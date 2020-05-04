@@ -3,9 +3,9 @@ import Bookshelf from "./components/Bookshelf/Bookshelf";
 import "./styles.css";
 
 const data = new Array(200).fill(0).map((d, id) => ({ id }));
-
+data[data.length - 1].trigger = true;
 export default function App() {
-  const [layout, setLayout] = React.useState("free");
+  const [layout, setLayout] = React.useState("shelf");
   const [selectedPoint, setSelectedPoint] = React.useState(null);
   console.log("selected point", selectedPoint);
 
@@ -23,6 +23,7 @@ export default function App() {
           layout={layout}
           selectedPoint={selectedPoint}
           onSelectPoint={setSelectedPoint}
+          setLayout={setLayout}
         />
       </div>
       <button className="reset-button" onClick={handleResetCamera}>
