@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-from os.path import join, dirname
 
 import requests
 import xmltodict
-from dotenv import load_dotenv
 
 VERSION = 2
 API_URL = "https://www.goodreads.com/review/list"
 SHELF = "read"
-
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
 
 GOODREADS_API_KEY = os.getenv('GOODREADS_API_KEY')
 
