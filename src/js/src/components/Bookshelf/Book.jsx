@@ -4,20 +4,25 @@ import { useLoader } from "react-three-fiber";
 import { a } from "react-spring/three";
 
 const Book = (
-  { position, onClick, onPointerDown, textureUrl, bookDimensions },
+  { position, onClick, onPointerDown, textureUrl, dimensions, data },
   ref
 ) => {
   const texture = useLoader(THREE.TextureLoader, textureUrl);
-  //   console.log("position", position);
+
+  const handleClick = () => {
+    // attach position data
+    data.position = position;
+    onClick(data);
+  };
+
   return (
     <a.mesh
       ref={ref}
       position={position}
-      rotation={[Math.PI * 0.5, 0, 0]}
-      onClick={onClick}
+      onClick={handleClick}
       onPointerDown={onPointerDown}
     >
-      <boxBufferGeometry attach="geometry" args={bookDimensions} />
+      <boxBufferGeometry attach="geometry" args={dimensions} />
       <meshStandardMaterial attach="material" map={texture} />
     </a.mesh>
   );

@@ -3,6 +3,11 @@ import { Canvas } from "react-three-fiber";
 import Controls from "../Controls/Controls";
 import BookPoints from "./BookPoints";
 import Effects from "../Effects/Effects";
+import Background from "../Room/Background";
+import { BackDrop, GroundPlane } from "../Room/Room";
+
+const backgroundUrl =
+  "https://us.123rf.com/450wm/pogrebkov/pogrebkov1804/pogrebkov180400052/100143207-black-cracked-brick-tiles-wall-texture-dark-old-rough-brickwork-background.jpg?ver=6";
 
 const ThreePointVis = ({ data, layout, selectedPoint, onSelectPoint }, ref) => {
   const controlsRef = React.useRef();
@@ -12,7 +17,15 @@ const ThreePointVis = ({ data, layout, selectedPoint, onSelectPoint }, ref) => {
     },
   }));
   return (
-    <Canvas camera={{ position: [0, 0, 10], far: 15000 }}>
+    <Canvas
+      camera={{ position: [0, 0, 20], far: 15000 }}
+      style={{
+        // background:
+        // "radial-gradient(at 50% 60%, #873740 0%, #272730 40%, #171720 80%, #070710 100%)",
+        backgroundImage: `url(${backgroundUrl})`,
+      }}
+    >
+      >
       <Controls ref={controlsRef} />
       <ambientLight color="#ffffff" intensity={0.1} />
       <hemisphereLight
@@ -29,7 +42,7 @@ const ThreePointVis = ({ data, layout, selectedPoint, onSelectPoint }, ref) => {
           onSelectPoint={onSelectPoint}
         />
       </React.Suspense>
-      <Effects />
+      {/* <Effects /> */}
     </Canvas>
   );
 };

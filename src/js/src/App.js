@@ -17,14 +17,6 @@ export default function App() {
   return (
     <div className="App">
       <div className="vis-container">
-        {/* <ThreePointVis
-          ref={visRef}
-          data={data}
-          layout={layout}
-          selectedPoint={selectedPoint}
-          onSelectPoint={setSelectedPoint}
-        /> */}
-
         <Bookshelf
           ref={visRef}
           data={data}
@@ -42,13 +34,7 @@ export default function App() {
           onClick={() => setLayout("free")}
           className={layout === "free" ? "active" : undefined}
         >
-          free
-        </button>
-        <button
-          onClick={() => setLayout("spiral")}
-          className={layout === "spiral" ? "active" : undefined}
-        >
-          Spiral
+          Free
         </button>
         <button
           onClick={() => setLayout("shelf")}

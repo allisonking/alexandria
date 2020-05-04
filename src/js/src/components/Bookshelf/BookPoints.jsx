@@ -1,5 +1,6 @@
 import * as React from "react";
 import Book from "./Book";
+import { useThree } from "react-three-fiber";
 import { config } from "react-spring";
 import { a, useSprings } from "react-spring/three";
 
@@ -16,17 +17,19 @@ const Points = ({ data, layout, selectedPoint, onSelectPoint }) => {
     const numRows = numCols;
     const col = (i % numCols) - numCols / 2;
     const row = Math.floor(i / numCols) - numRows / 2;
-    const position = [col * 1.05, row * 1.2, 0];
+    const position = [
+      col * bookDimensions[0] * 1.1,
+      row * bookDimensions[1] * 1.1,
+      0,
+    ];
     return {
-      // position: [10 - Math.random() * 20, 10 - Math.random() * 20, i * 0.5],
       position: position,
     };
   };
 
   const random = (i) => {
-    const r = Math.random();
     return {
-      position: [10 - Math.random() * 20, 10 - Math.random() * 20, i * 0.5],
+      position: [25 - Math.random() * 50, 25 - Math.random() * 50, i * 0.05],
     };
   };
 
@@ -68,30 +71,35 @@ const Points = ({ data, layout, selectedPoint, onSelectPoint }) => {
     }
   }, [layout]);
 
+  const handleClick = (d) => {
+    if (selectedPoint && d.id === selectedPoint.id) {
+      onSelectPoint(undefined);
+    } else {
+      console.log("selecting point d", d);
+      onSelectPoint(d);
+    }
+  };
+
   return (
     <>
       {data.map((d, i) => {
         return (
           <Book
             key={d.id}
+            data={d}
             position={springs[i].position}
             dimensions={bookDimensions}
+            onClick={handleClick}
             textureUrl={i % 2 ? texture1 : texture2}
           />
         );
       })}
-      {/* {selectedPoint && (
-        <a.group
-          position={animationProgress.interpolate(() => [
-            selectedPoint.x,
-            selectedPoint.y,
-            selectedPoint.z,
-          ])}
-        >
+      {selectedPoint && (
+        <a.group position={selectedPoint.position}>
           <pointLight
             distance={9}
-            position={[0, 0, 0.3]}
-            intensity={5}
+            position={[0, 0, 1]}
+            intensity={4}
             decay={30}
             color="#3f3"
           />
@@ -103,7 +111,7 @@ const Points = ({ data, layout, selectedPoint, onSelectPoint }) => {
             color="#2f0"
           />
         </a.group>
-      )} */}
+      )}
     </>
   );
 };
